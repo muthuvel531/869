@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>My Calendar</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css" />
+
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body {
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: #000;
+            color: #fff;
+        }
+
+        .container {
+            width: 380px;
+            padding: 22px;
+        }
+
+        .header-title {
+            font-size: 26px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .calendar-box {
+            background: #18181f;
+            border-radius: 22px;
+            padding: 22px;
+            margin-bottom: 20px;
+        }
+
+        .month-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+
+        .nav-btn span {
+            cursor: pointer;
+            padding: 4px 10px;
+            border-radius: 8px;
+        }
+
+        .nav-btn span:hover {
+            background: #2e2e39;
+        }
+
+        .weekdays,
+        .days {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            text-align: center;
+        }
+
+        .weekdays {
+            opacity: 0.6;
+            margin-bottom: 10px;
+            font-size: 14px;
+        }
+
+        .days div {
+            width: 42px;
+            height: 42px;
+            margin: auto;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #15151c;
+            border-radius: 12px;
+            cursor: pointer;
+        }
+
+        .days div:hover {
+            background: #6a34ff;
+        }
+
+        .section-title {
+            font-size: 18px;
+            margin: 20px 0 12px;
+        }
+
+        .see-all {
+            float: right;
+            font-size: 14px;
+            color: #a259ff;
+            cursor: pointer;
+        }
+
+        .booking-card {
+            background: #1c1c23;
+            padding: 16px;
+            border-radius: 18px;
+            display: flex;
+            align-items: center;
+            margin-bottom: 14px;
+            gap: 12px;
+        }
+
+        .service-img {
+            width: 60px;
+            height: 60px;
+            border-radius: 12px;
+            background: #15151c;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+            color: #c08aff;
+        }
+
+        .details {
+            flex: 1;
+        }
+
+        .details h4 {
+            margin: 0 0 4px 0;
+        }
+
+        .details p {
+            margin: 0;
+            font-size: 13px;
+            color: #ccc;
+        }
+
+        .chat-icon {
+            background: #25D366;
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 14px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+        function CalendarPage() {
+            const [month, setMonth] = React.useState(new Date().getMonth());
+            const [year, setYear] = React.useState(new Date().getFullYear());
+            const [bookings, setBookings] = React.useState([]);
+
+            React.useEffect(() => {
+                // Example bookings stored in localStorage
+                // If using icons, store as: icon: "fa-wrench" (plumbing), "fa-hand-sparkles" (cleaning)
+                const data = JSON.parse(localStorage.getItem("bookings")) || [];
+                setBookings(data.filter(b => b.status === "Upcoming"));
+            }, []);
+
+            const daysInMonth = (m, y) => new Date(y, m + 1, 0).getDate();
+            const firstDay = (m, y) => (new Date(y, m, 1).getDay() + 6) % 7;
+
+            function sendWhatsApp(b) {
+                const msg = `Hi! I want to talk about my booking:
+Service: ${b.service}
+Name: ${b.name}
+Price: ${b.price || "N/A"}`;
+                window.open("https://wa.me/916381893332?text=" + encodeURIComponent(msg));
+            }
+
+            return (
+                <div className="container">
+                    <h2 className="header-title">📅 My Calendar</h2>
+
+                    <div className="calendar-box">
+                        <div className="month-row">
+                            <h3>{new Date(year, month).toLocaleString("default", { month: "long" })} {year}</h3>
+                            <div className="nav-btn">
+                                <span onClick={() => setMonth(m => m === 0 ? (setYear(y => y - 1), 11) : m - 1)}>◀</span>
+                                <span onClick={() => setMonth(m => m === 11 ? (setYear(y => y + 1), 0) : m + 1)}>▶</span>
+                            </div>
+                        </div>
+
+                        <div className="weekdays">
+                            <span>Mo</span><span>Tu</span><span>We</span>
+                            <span>Th</span><span>Fr</span><span>Sa</span><span>Su</span>
+                        </div>
+
+                        <div className="days">
+                            {Array(firstDay(month, year)).fill().map((_, i) => <div key={"e" + i}></div>)}
+                            {Array(daysInMonth(month, year)).fill().map((_, i) => <div key={i}>{i + 1}</div>)}
+                        </div>
+                    </div>
+
+                    <div className="section-title">
+                        Upcoming Bookings ({bookings.length})
+                        <span className="see-all">See All</span>
+                    </div>
+
+                    {bookings.length === 0 ? (
+                        <p style={{ opacity: 0.6 }}>No upcoming bookings</p>
+                    ) : (
+                        bookings.map((b, i) => (
+                            <div className="booking-card" key={i}>
+                                <div className="service-img">
+                                    {b.icon ? <i className={`fa-solid ${b.icon}`}></i> : <img src={b.image} alt={b.service} style={{ width: '60px', height: '60px', borderRadius: '12px' }} />}
+                                </div>
+                                <div className="details">
+                                    <h4>{b.service}</h4>
+                                    <p>{b.name}</p>
+                                </div>
+                                <div className="chat-icon" onClick={() => sendWhatsApp(b)}>
+                                    Message
+                                </div>
+                            </div>
+                        ))
+                    )}
+                </div>
+            );
+        }
+
+        ReactDOM.createRoot(document.getElementById("root")).render(<CalendarPage />);
+    </script>
+</body>
+
+</html>
