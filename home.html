@@ -254,6 +254,12 @@
                 { percent: "20%", text: "Plumbing Deal", note: "Limited time" },
                 { percent: "30%", text: "Today's Special", note: "All services" },
             ];
+            const [username, setUsername] = React.useState("");
+
+            React.useEffect(() => {
+                const name = localStorage.getItem("username");
+                if (name) setUsername(name);
+            }, []);
 
             return (
                 <div className="app">
@@ -261,7 +267,7 @@
                     <div className="top-bar">
                         <div>
                             <p className="welcome">Good Morning 👋</p>
-                            <h3 className="username">User</h3>
+                      <h3 className="username">{username}</h3>
                         </div>
                         <div>
                             <i className="fa-regular fa-bell"></i>
@@ -333,6 +339,7 @@
 
 
 </html>
+
 
 
 
